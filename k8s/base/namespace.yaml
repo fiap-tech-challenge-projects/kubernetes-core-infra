@@ -1,0 +1,16 @@
+# =============================================================================
+# Namespace para Aplicacao FIAP Tech Challenge
+# =============================================================================
+# Este namespace e criado pelo Terraform, mas este arquivo serve como
+# referencia e pode ser usado para aplicacao manual se necessario.
+# =============================================================================
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ftc-app
+  labels:
+    name: ftc-app
+    environment: development
+    project: fiap-tech-challenge
+    managed-by: terraform
