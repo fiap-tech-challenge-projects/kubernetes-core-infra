@@ -108,9 +108,14 @@ output "ebs_csi_driver_role_arn" {
 # Namespace Outputs
 # -----------------------------------------------------------------------------
 
-output "app_namespace" {
-  description = "Namespace da aplicacao"
-  value       = kubernetes_namespace.app.metadata[0].name
+output "staging_namespace" {
+  description = "Namespace da aplicacao - Staging"
+  value       = kubernetes_namespace.staging.metadata[0].name
+}
+
+output "production_namespace" {
+  description = "Namespace da aplicacao - Production"
+  value       = kubernetes_namespace.production.metadata[0].name
 }
 
 output "signoz_namespace" {

@@ -5,16 +5,34 @@
 # =============================================================================
 
 # -----------------------------------------------------------------------------
-# Namespace para Aplicacao
+# Namespace para Aplicacao - Staging (Homologacao)
 # -----------------------------------------------------------------------------
 
-resource "kubernetes_namespace" "app" {
+resource "kubernetes_namespace" "staging" {
   metadata {
-    name = var.app_namespace
+    name = "${var.app_namespace}-staging"
 
     labels = {
-      name        = var.app_namespace
-      environment = var.environment
+      name        = "${var.app_namespace}-staging"
+      environment = "staging"
+      managed-by  = "terraform"
+    }
+  }
+
+  depends_on = [aws_eks_node_group.main]
+}
+
+# -----------------------------------------------------------------------------
+# Namespace para Aplicacao - Production
+# -----------------------------------------------------------------------------
+
+resource "kubernetes_namespace" "production" {
+  metadata {
+    name = "${var.app_namespace}-production"
+
+    labels = {
+      name        = "${var.app_namespace}-production"
+      environment = "production"
       managed-by  = "terraform"
     }
   }
