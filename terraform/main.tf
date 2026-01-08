@@ -29,7 +29,7 @@ terraform {
 
   # Backend S3 para armazenamento do state
   backend "s3" {
-    bucket         = "fiap-tech-challenge-terraform-state"
+    bucket         = "fiap-tech-challenge-tf-state-118735037876"
     key            = "kubernetes-core-infra/terraform.tfstate"
     region         = "us-east-1"
     encrypt        = true
