@@ -89,20 +89,27 @@ output "oidc_provider_url" {
 # IAM Outputs
 # -----------------------------------------------------------------------------
 
+output "lab_role_arn" {
+  description = "ARN da LabRole usada para EKS (AWS Academy)"
+  value       = data.aws_iam_role.lab_role.arn
+}
+
 output "node_role_arn" {
-  description = "ARN da IAM Role dos nodes"
-  value       = aws_iam_role.eks_node_group.arn
+  description = "ARN da IAM Role dos nodes (LabRole no AWS Academy)"
+  value       = data.aws_iam_role.lab_role.arn
 }
 
-output "aws_lb_controller_role_arn" {
-  description = "ARN da IAM Role do AWS LB Controller"
-  value       = var.enable_aws_lb_controller ? aws_iam_role.aws_lb_controller[0].arn : null
-}
-
-output "ebs_csi_driver_role_arn" {
-  description = "ARN da IAM Role do EBS CSI Driver"
-  value       = aws_iam_role.ebs_csi_driver.arn
-}
+# NOTE: AWS Academy - These IRSA roles are not created
+# In production with custom IAM, these outputs would be available:
+# output "aws_lb_controller_role_arn" {
+#   description = "ARN da IAM Role do AWS LB Controller"
+#   value       = var.enable_aws_lb_controller ? aws_iam_role.aws_lb_controller[0].arn : null
+# }
+#
+# output "ebs_csi_driver_role_arn" {
+#   description = "ARN da IAM Role do EBS CSI Driver"
+#   value       = aws_iam_role.ebs_csi_driver.arn
+# }
 
 # -----------------------------------------------------------------------------
 # Namespace Outputs

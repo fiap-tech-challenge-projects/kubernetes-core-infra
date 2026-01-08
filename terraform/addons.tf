@@ -68,10 +68,12 @@ resource "helm_release" "aws_lb_controller" {
     value = "aws-load-balancer-controller"
   }
 
-  set {
-    name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
-    value = aws_iam_role.aws_lb_controller[0].arn
-  }
+  # NOTE: AWS Academy - Cannot use IRSA, LB Controller will use node role (LabRole)
+  # In production, uncomment this to use dedicated IRSA:
+  # set {
+  #   name  = "serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
+  #   value = aws_iam_role.aws_lb_controller[0].arn
+  # }
 
   set {
     name  = "region"
@@ -85,7 +87,6 @@ resource "helm_release" "aws_lb_controller" {
 
   depends_on = [
     aws_eks_node_group.main,
-    aws_iam_role_policy_attachment.aws_lb_controller,
   ]
 }
 

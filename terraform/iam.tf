@@ -32,17 +32,3 @@ resource "aws_iam_openid_connect_provider" "eks" {
 
   tags = var.common_tags
 }
-
-# -----------------------------------------------------------------------------
-# Output para uso em outros modulos
-# -----------------------------------------------------------------------------
-
-output "lab_role_arn" {
-  description = "ARN da LabRole usada para EKS (AWS Academy)"
-  value       = data.aws_iam_role.lab_role.arn
-}
-
-output "oidc_provider_arn" {
-  description = "ARN do OIDC provider para IRSA"
-  value       = aws_iam_openid_connect_provider.eks.arn
-}
