@@ -11,7 +11,7 @@
 resource "aws_eks_cluster" "main" {
   name     = local.cluster_name
   version  = var.kubernetes_version
-  role_arn = aws_iam_role.eks_cluster.arn
+  role_arn = data.aws_iam_role.lab_role.arn
 
   vpc_config {
     subnet_ids              = concat(aws_subnet.public[*].id, aws_subnet.private[*].id)
@@ -33,8 +33,6 @@ resource "aws_eks_cluster" "main" {
   tags = local.eks_tags
 
   depends_on = [
-    aws_iam_role_policy_attachment.eks_cluster_policy,
-    aws_iam_role_policy_attachment.eks_vpc_resource_controller,
     aws_cloudwatch_log_group.eks,
   ]
 }

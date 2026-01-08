@@ -99,7 +99,7 @@ variable "kubernetes_version" {
 
   validation {
     condition     = can(regex("^1\\.(2[5-9]|3[0-9])$", var.kubernetes_version))
-    error_message = "Kubernetes version deve ser 1.25 ou superior."
+    error_message = "Kubernetes version deve estar entre 1.25 e 1.39."
   }
 }
 

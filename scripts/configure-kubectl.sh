@@ -22,11 +22,15 @@ echo -e "${GREEN}========================================${NC}"
 # -----------------------------------------------------------------------------
 
 AWS_REGION="${AWS_REGION:-us-east-1}"
-CLUSTER_NAME="${CLUSTER_NAME:-fiap-tech-challenge-eks-development}"
+ENVIRONMENT="${ENVIRONMENT:-staging}"
+CLUSTER_NAME="${CLUSTER_NAME:-fiap-tech-challenge-eks-${ENVIRONMENT}}"
+APP_NAMESPACE="ftc-app-${ENVIRONMENT}"
 
 echo -e "\n${YELLOW}Configuracao:${NC}"
 echo "  AWS Region: $AWS_REGION"
+echo "  Environment: $ENVIRONMENT"
 echo "  Cluster Name: $CLUSTER_NAME"
+echo "  App Namespace: $APP_NAMESPACE"
 
 # -----------------------------------------------------------------------------
 # Verificar pre-requisitos
@@ -115,7 +119,7 @@ echo -e "\n${YELLOW}Namespaces:${NC}"
 kubectl get namespaces
 
 echo -e "\n${YELLOW}Comandos uteis:${NC}"
-echo "  kubectl get pods -n ftc-app           # Ver pods da aplicacao"
-echo "  kubectl get pods -n signoz            # Ver pods do SigNoz"
-echo "  kubectl logs -f <pod> -n ftc-app      # Ver logs de um pod"
+echo "  kubectl get pods -n $APP_NAMESPACE        # Ver pods da aplicacao"
+echo "  kubectl get pods -n signoz                # Ver pods do SigNoz"
+echo "  kubectl logs -f <pod> -n $APP_NAMESPACE   # Ver logs de um pod"
 echo "  kubectl port-forward -n signoz svc/signoz-frontend 3301:3301  # Acessar SigNoz"
