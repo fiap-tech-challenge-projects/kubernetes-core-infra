@@ -221,9 +221,10 @@ resource "aws_eks_addon" "kube_proxy" {
 
 # EBS CSI Driver
 resource "aws_eks_addon" "ebs_csi" {
-  cluster_name             = aws_eks_cluster.main.name
-  addon_name               = "aws-ebs-csi-driver"
-  service_account_role_arn = aws_iam_role.ebs_csi_driver.arn
+  cluster_name = aws_eks_cluster.main.name
+  addon_name   = "aws-ebs-csi-driver"
+  # NOTE: AWS Academy - Cannot use IRSA, addon will use node role (LabRole)
+  # In production, add: service_account_role_arn = aws_iam_role.ebs_csi_driver.arn
 
   resolve_conflicts_on_create = "OVERWRITE"
   resolve_conflicts_on_update = "OVERWRITE"
