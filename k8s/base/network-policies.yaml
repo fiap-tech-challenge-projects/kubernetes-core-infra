@@ -1,0 +1,152 @@
+# =============================================================================
+# Network Policies - FIAP Tech Challenge
+# =============================================================================
+# Politicas de rede para controlar trafego entre pods
+# =============================================================================
+
+---
+# Default deny all ingress traffic
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-ingress
+  namespace: ftc-app
+  labels:
+    app.kubernetes.io/part-of: fiap-tech-challenge
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+
+---
+# Allow traffic from same namespace
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-same-namespace
+  namespace: ftc-app
+  labels:
+    app.kubernetes.io/part-of: fiap-tech-challenge
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector: {}
+
+---
+# Allow traffic from ingress controller
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-controller
+  namespace: ftc-app
+  labels:
+    app.kubernetes.io/part-of: fiap-tech-challenge
+spec:
+  podSelector:
+    matchLabels:
+      app: fiap-tech-challenge-api
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: kube-system
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: aws-load-balancer-controller
+
+---
+# Allow DNS traffic
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-dns
+  namespace: ftc-app
+  labels:
+    app.kubernetes.io/part-of: fiap-tech-challenge
+spec:
+  podSelector: {}
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector: {}
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+
+---
+# Allow egress to RDS (PostgreSQL)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-egress-rds
+  namespace: ftc-app
+  labels:
+    app.kubernetes.io/part-of: fiap-tech-challenge
+spec:
+  podSelector:
+    matchLabels:
+      app: fiap-tech-challenge-api
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 10.0.0.0/16 # VPC CIDR - RDS esta na mesma VPC
+      ports:
+        - protocol: TCP
+          port: 5432
+
+---
+# Allow egress to SigNoz (OpenTelemetry)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-egress-signoz
+  namespace: ftc-app
+  labels:
+    app.kubernetes.io/part-of: fiap-tech-challenge
+spec:
+  podSelector:
+    matchLabels:
+      app: fiap-tech-challenge-api
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: signoz
+      ports:
+        - protocol: TCP
+          port: 4317 # OTLP gRPC
+        - protocol: TCP
+          port: 4318 # OTLP HTTP
+
+---
+# Allow egress to AWS services (HTTPS)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-egress-aws
+  namespace: ftc-app
+  labels:
+    app.kubernetes.io/part-of: fiap-tech-challenge
+spec:
+  podSelector: {}
+  policyTypes:
+    - Egress
+  egress:
+    - ports:
+        - protocol: TCP
+          port: 443
