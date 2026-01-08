@@ -152,7 +152,7 @@ output "signoz_otel_endpoint" {
 
 output "summary" {
   description = "Resumo da infraestrutura"
-  value = <<-EOT
+  value       = <<-EOT
     ================================================================================
     FIAP Tech Challenge - Kubernetes Core Infrastructure
     ================================================================================

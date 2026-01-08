@@ -119,9 +119,9 @@ resource "kubernetes_namespace" "signoz" {
     name = var.signoz_namespace
 
     labels = {
-      name        = var.signoz_namespace
-      purpose     = "observability"
-      managed-by  = "terraform"
+      name       = var.signoz_namespace
+      purpose    = "observability"
+      managed-by = "terraform"
     }
   }
 

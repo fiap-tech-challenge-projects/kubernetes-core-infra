@@ -64,10 +64,10 @@ app_namespace = "ftc-app"
 # SigNoz Configuration
 # -----------------------------------------------------------------------------
 
-enable_signoz       = true
-signoz_namespace    = "signoz"
+enable_signoz        = true
+signoz_namespace     = "signoz"
 signoz_chart_version = "0.32.0"
-signoz_storage_size = "20Gi" # Ajustar conforme necessidade
+signoz_storage_size  = "20Gi" # Ajustar conforme necessidade
 
 # -----------------------------------------------------------------------------
 # AWS Load Balancer Controller
