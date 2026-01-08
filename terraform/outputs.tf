@@ -74,16 +74,18 @@ output "node_security_group_id" {
 # -----------------------------------------------------------------------------
 # OIDC Outputs (para IRSA)
 # -----------------------------------------------------------------------------
-
-output "oidc_provider_arn" {
-  description = "ARN do OIDC Provider"
-  value       = aws_iam_openid_connect_provider.eks.arn
-}
-
-output "oidc_provider_url" {
-  description = "URL do OIDC Provider"
-  value       = aws_iam_openid_connect_provider.eks.url
-}
+# AWS ACADEMY: OIDC provider cannot be created due to IAM restrictions
+# In production, uncomment these outputs:
+#
+# output "oidc_provider_arn" {
+#   description = "ARN do OIDC Provider"
+#   value       = aws_iam_openid_connect_provider.eks.arn
+# }
+#
+# output "oidc_provider_url" {
+#   description = "URL do OIDC Provider"
+#   value       = aws_iam_openid_connect_provider.eks.url
+# }
 
 # -----------------------------------------------------------------------------
 # IAM Outputs

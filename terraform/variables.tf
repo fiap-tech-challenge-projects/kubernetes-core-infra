@@ -95,11 +95,11 @@ variable "enable_dns_support" {
 variable "kubernetes_version" {
   description = "Versao do Kubernetes para o cluster EKS"
   type        = string
-  default     = "1.28"
+  default     = "1.31"
 
   validation {
-    condition     = can(regex("^1\\.(2[5-9]|3[0-9])$", var.kubernetes_version))
-    error_message = "Kubernetes version deve estar entre 1.25 e 1.39."
+    condition     = can(regex("^1\\.(2[7-9]|3[0-9])$", var.kubernetes_version))
+    error_message = "Kubernetes version deve estar entre 1.27 e 1.39."
   }
 }
 
