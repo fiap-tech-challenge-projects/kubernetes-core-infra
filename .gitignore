@@ -47,3 +47,6 @@ Thumbs.db
 # Temp
 .temp
 .tmp
+
+# Claude Code guidance file
+CLAUDE.md
