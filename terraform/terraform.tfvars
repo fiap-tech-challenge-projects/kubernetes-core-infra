@@ -38,7 +38,7 @@ enable_dns_support   = true
 # EKS Configuration
 # -----------------------------------------------------------------------------
 
-kubernetes_version              = "1.28"
+kubernetes_version              = "1.31"
 cluster_endpoint_public_access  = true
 cluster_endpoint_private_access = true
 cluster_enabled_log_types       = ["api", "audit", "authenticator"]
