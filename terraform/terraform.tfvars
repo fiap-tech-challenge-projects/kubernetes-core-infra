@@ -64,7 +64,7 @@ app_namespace = "ftc-app"
 # SigNoz Configuration
 # -----------------------------------------------------------------------------
 
-enable_signoz        = true
+enable_signoz        = false  # Temporariamente desabilitado - timeout de 20min
 signoz_namespace     = "signoz"
 signoz_chart_version = "0.32.0"
 signoz_storage_size  = "20Gi" # Ajustar conforme necessidade
