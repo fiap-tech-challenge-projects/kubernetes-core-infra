@@ -127,8 +127,17 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Get AWS Account ID
+        id: account
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          echo "account_id=${ACCOUNT_ID}" >> $GITHUB_OUTPUT
+          echo "AWS Account ID: ${ACCOUNT_ID}"
+
       - name: Terraform Init
-        run: terraform init
+        run: |
+          terraform init \
+            -backend-config="bucket=fiap-tech-challenge-tf-state-${{ steps.account.outputs.account_id }}"
         working-directory: ${{ env.TF_WORKING_DIR }}
 
       - name: Terraform Workspace
@@ -196,8 +205,17 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Get AWS Account ID
+        id: account
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          echo "account_id=${ACCOUNT_ID}" >> $GITHUB_OUTPUT
+          echo "AWS Account ID: ${ACCOUNT_ID}"
+
       - name: Terraform Init
-        run: terraform init
+        run: |
+          terraform init \
+            -backend-config="bucket=fiap-tech-challenge-tf-state-${{ steps.account.outputs.account_id }}"
         working-directory: ${{ env.TF_WORKING_DIR }}
 
       - name: Terraform Workspace
@@ -262,8 +280,17 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Get AWS Account ID
+        id: account
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          echo "account_id=${ACCOUNT_ID}" >> $GITHUB_OUTPUT
+          echo "AWS Account ID: ${ACCOUNT_ID}"
+
       - name: Terraform Init
-        run: terraform init
+        run: |
+          terraform init \
+            -backend-config="bucket=fiap-tech-challenge-tf-state-${{ steps.account.outputs.account_id }}"
         working-directory: ${{ env.TF_WORKING_DIR }}
 
       - name: Determine Environment
@@ -339,8 +366,17 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Get AWS Account ID
+        id: account
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          echo "account_id=${ACCOUNT_ID}" >> $GITHUB_OUTPUT
+          echo "AWS Account ID: ${ACCOUNT_ID}"
+
       - name: Terraform Init
-        run: terraform init
+        run: |
+          terraform init \
+            -backend-config="bucket=fiap-tech-challenge-tf-state-${{ steps.account.outputs.account_id }}"
         working-directory: ${{ env.TF_WORKING_DIR }}
 
       - name: Terraform Workspace
