@@ -13,14 +13,6 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = "~> 2.23"
-    }
-    helm = {
-      source  = "hashicorp/helm"
-      version = "~> 2.12"
-    }
     tls = {
       source  = "hashicorp/tls"
       version = "~> 4.0"
@@ -49,31 +41,9 @@ provider "aws" {
   }
 }
 
-# Kubernetes provider configurado apos criacao do cluster
-provider "kubernetes" {
-  host                   = aws_eks_cluster.main.endpoint
-  cluster_ca_certificate = base64decode(aws_eks_cluster.main.certificate_authority[0].data)
-
-  exec {
-    api_version = "client.authentication.k8s.io/v1"
-    command     = "aws"
-    args        = ["eks", "get-token", "--cluster-name", aws_eks_cluster.main.name]
-  }
-}
-
-# Helm provider para instalacao de charts
-provider "helm" {
-  kubernetes {
-    host                   = aws_eks_cluster.main.endpoint
-    cluster_ca_certificate = base64decode(aws_eks_cluster.main.certificate_authority[0].data)
-
-    exec {
-      api_version = "client.authentication.k8s.io/v1"
-      command     = "aws"
-      args        = ["eks", "get-token", "--cluster-name", aws_eks_cluster.main.name]
-    }
-  }
-}
+# NOTE: Kubernetes and Helm providers removed to prevent chicken-and-egg problem
+# during cluster creation. These providers are now configured in kubernetes-addons
+# module which reads the cluster info via remote_state after cluster is created.
 
 # -----------------------------------------------------------------------------
 # Data Sources

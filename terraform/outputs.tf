@@ -116,21 +116,8 @@ output "node_role_arn" {
 # -----------------------------------------------------------------------------
 # Namespace Outputs
 # -----------------------------------------------------------------------------
-
-output "staging_namespace" {
-  description = "Namespace da aplicacao - Staging"
-  value       = kubernetes_namespace.staging.metadata[0].name
-}
-
-output "production_namespace" {
-  description = "Namespace da aplicacao - Production"
-  value       = kubernetes_namespace.production.metadata[0].name
-}
-
-output "signoz_namespace" {
-  description = "Namespace do SigNoz"
-  value       = var.enable_signoz ? kubernetes_namespace.signoz[0].metadata[0].name : null
-}
+# NOTE: Namespace outputs moved to kubernetes-addons module (Phase 2)
+# These resources are created after cluster exists to avoid provider init issues
 
 # -----------------------------------------------------------------------------
 # Kubeconfig Command
@@ -144,26 +131,18 @@ output "kubeconfig_command" {
 # -----------------------------------------------------------------------------
 # SigNoz Access
 # -----------------------------------------------------------------------------
-
-output "signoz_frontend_service" {
-  description = "Como acessar o SigNoz Frontend"
-  value       = var.enable_signoz ? "kubectl port-forward -n ${var.signoz_namespace} svc/signoz-frontend 3301:3301" : null
-}
-
-output "signoz_otel_endpoint" {
-  description = "Endpoint do OpenTelemetry Collector"
-  value       = var.enable_signoz ? "signoz-otel-collector.${var.signoz_namespace}.svc.cluster.local:4317" : null
-}
+# NOTE: SigNoz outputs moved to kubernetes-addons module (Phase 2)
+# SigNoz is installed after cluster exists to avoid provider init issues
 
 # -----------------------------------------------------------------------------
 # Summary Output
 # -----------------------------------------------------------------------------
 
 output "summary" {
-  description = "Resumo da infraestrutura"
+  description = "Resumo da infraestrutura - Fase 1 (Cluster)"
   value       = <<-EOT
     ================================================================================
-    FIAP Tech Challenge - Kubernetes Core Infrastructure
+    FIAP Tech Challenge - Kubernetes Core Infrastructure (Phase 1)
     ================================================================================
 
     Cluster EKS:
@@ -183,14 +162,11 @@ output "summary" {
       Min: ${var.node_min_size}
       Max: ${var.node_max_size}
 
-    Addons:
-      AWS Load Balancer Controller: ${var.enable_aws_lb_controller ? "Habilitado" : "Desabilitado"}
-      SigNoz: ${var.enable_signoz ? "Habilitado" : "Desabilitado"}
-
     Configurar kubectl:
       aws eks update-kubeconfig --region ${var.aws_region} --name ${aws_eks_cluster.main.name}
 
-    ${var.enable_signoz ? "Acessar SigNoz:\n      kubectl port-forward -n ${var.signoz_namespace} svc/signoz-frontend 3301:3301\n      Abra: http://localhost:3301" : ""}
+    Proximo passo:
+      Deploy kubernetes-addons (Phase 2) para instalar namespaces, LB Controller e SigNoz
     ================================================================================
   EOT
 }
