@@ -145,6 +145,19 @@ jobs:
           terraform workspace select staging || terraform workspace new staging
         working-directory: ${{ env.TF_WORKING_DIR }}
 
+      - name: Clean K8s Resources from State (Phase 1 migration)
+        run: |
+          echo "Cleaning Kubernetes resources from state (moved to Phase 2)..."
+          terraform state rm 'kubernetes_namespace.staging' 2>/dev/null || echo "  ✓ staging namespace not in state"
+          terraform state rm 'kubernetes_namespace.production' 2>/dev/null || echo "  ✓ production namespace not in state"
+          terraform state rm 'kubernetes_namespace.signoz[0]' 2>/dev/null || echo "  ✓ signoz namespace not in state"
+          terraform state rm 'helm_release.aws_lb_controller[0]' 2>/dev/null || echo "  ✓ aws-lb-controller not in state"
+          terraform state rm 'helm_release.metrics_server' 2>/dev/null || echo "  ✓ metrics-server not in state"
+          terraform state rm 'helm_release.signoz[0]' 2>/dev/null || echo "  ✓ signoz not in state"
+          echo "✓ State cleaned - Phase 1 resources only"
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        continue-on-error: true
+
       - name: Terraform Plan
         run: terraform plan -var="environment=staging" -out=tfplan
         working-directory: ${{ env.TF_WORKING_DIR }}
@@ -222,6 +235,19 @@ jobs:
         run: |
           terraform workspace select production || terraform workspace new production
         working-directory: ${{ env.TF_WORKING_DIR }}
+
+      - name: Clean K8s Resources from State (Phase 1 migration)
+        run: |
+          echo "Cleaning Kubernetes resources from state (moved to Phase 2)..."
+          terraform state rm 'kubernetes_namespace.staging' 2>/dev/null || echo "  ✓ staging namespace not in state"
+          terraform state rm 'kubernetes_namespace.production' 2>/dev/null || echo "  ✓ production namespace not in state"
+          terraform state rm 'kubernetes_namespace.signoz[0]' 2>/dev/null || echo "  ✓ signoz namespace not in state"
+          terraform state rm 'helm_release.aws_lb_controller[0]' 2>/dev/null || echo "  ✓ aws-lb-controller not in state"
+          terraform state rm 'helm_release.metrics_server' 2>/dev/null || echo "  ✓ metrics-server not in state"
+          terraform state rm 'helm_release.signoz[0]' 2>/dev/null || echo "  ✓ signoz not in state"
+          echo "✓ State cleaned - Phase 1 resources only"
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        continue-on-error: true
 
       - name: Terraform Plan
         run: terraform plan -var="environment=production" -out=tfplan
