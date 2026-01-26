@@ -14,6 +14,9 @@ resource "aws_eks_node_group" "main" {
   node_role_arn   = data.aws_iam_role.lab_role.arn
   subnet_ids      = aws_subnet.private[*].id
 
+  # Use Amazon Linux 2 instead of AL2023 for better EKS bootstrap compatibility
+  ami_type = "AL2_x86_64"
+
   capacity_type  = var.node_capacity_type
   instance_types = var.node_instance_types
   disk_size      = var.node_disk_size
