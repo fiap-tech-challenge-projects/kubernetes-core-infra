@@ -19,22 +19,24 @@ data "aws_iam_role" "lab_role" {
 # -----------------------------------------------------------------------------
 # Attach Required EKS Node Policies to LabRole
 # -----------------------------------------------------------------------------
-# Note: These attachments are idempotent - if already attached, no error occurs
+# AWS ACADEMY LIMITATION: Cannot attach/detach policies from LabRole
+# LabRole already has necessary permissions in AWS Academy environment
+# In production AWS, these policies would need to be attached to custom roles
 
-resource "aws_iam_role_policy_attachment" "eks_worker_node_policy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-  role       = data.aws_iam_role.lab_role.name
-}
-
-resource "aws_iam_role_policy_attachment" "eks_cni_policy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
-  role       = data.aws_iam_role.lab_role.name
-}
-
-resource "aws_iam_role_policy_attachment" "ecr_read_only" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  role       = data.aws_iam_role.lab_role.name
-}
+# resource "aws_iam_role_policy_attachment" "eks_worker_node_policy" {
+#   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+#   role       = data.aws_iam_role.lab_role.name
+# }
+#
+# resource "aws_iam_role_policy_attachment" "eks_cni_policy" {
+#   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+#   role       = data.aws_iam_role.lab_role.name
+# }
+#
+# resource "aws_iam_role_policy_attachment" "ecr_read_only" {
+#   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+#   role       = data.aws_iam_role.lab_role.name
+# }
 
 # -----------------------------------------------------------------------------
 # OIDC Provider para Service Accounts (IRSA)
