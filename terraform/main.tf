@@ -36,9 +36,11 @@ terraform {
 provider "aws" {
   region = var.aws_region
 
-  default_tags {
-    tags = var.common_tags
-  }
+  # AWS Academy: Cannot use default_tags with IAM resources (iam:TagPolicy not allowed)
+  # All resources that support tags have explicit tags via merge(var.common_tags, {...})
+  # default_tags {
+  #   tags = var.common_tags
+  # }
 }
 
 # NOTE: Kubernetes and Helm providers removed to prevent chicken-and-egg problem
