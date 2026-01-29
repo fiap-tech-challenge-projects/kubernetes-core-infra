@@ -11,7 +11,7 @@
 resource "aws_eks_cluster" "main" {
   name     = local.cluster_name
   version  = var.kubernetes_version
-  role_arn = aws_iam_role.eks_cluster.arn  # Production: custom IAM role
+  role_arn = aws_iam_role.eks_cluster.arn # Production: custom IAM role
   # AWS ACADEMY: Use data.aws_iam_role.lab_role.arn instead
 
   vpc_config {
@@ -63,7 +63,7 @@ resource "aws_kms_alias" "eks" {
 
 resource "aws_cloudwatch_log_group" "eks" {
   name              = "/aws/eks/${local.cluster_name}/cluster"
-  retention_in_days = 30  # Production: 30 days for troubleshooting
+  retention_in_days = 30 # Production: 30 days for troubleshooting
   # AWS ACADEMY: Use retention_in_days = 7 for cost optimization
 
   tags = var.common_tags

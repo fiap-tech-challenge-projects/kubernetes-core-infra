@@ -11,9 +11,9 @@
 resource "aws_eks_node_group" "main" {
   cluster_name    = aws_eks_cluster.main.name
   node_group_name = "${var.project_name}-nodes-${var.environment}"
-  node_role_arn   = aws_iam_role.eks_nodes.arn  # Production: custom IAM role
+  node_role_arn   = aws_iam_role.eks_nodes.arn # Production: custom IAM role
   # AWS ACADEMY: Use data.aws_iam_role.lab_role.arn instead
-  subnet_ids      = aws_subnet.private[*].id
+  subnet_ids = aws_subnet.private[*].id
 
   # Use Amazon Linux 2 instead of AL2023 for better EKS bootstrap compatibility
   ami_type = "AL2_x86_64"

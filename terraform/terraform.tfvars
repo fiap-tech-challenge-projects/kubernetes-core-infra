@@ -29,9 +29,9 @@ common_tags = {
 # VPC Configuration
 # -----------------------------------------------------------------------------
 
-vpc_cidr             = "10.0.0.0/16"
-enable_nat_gateway   = true
-single_nat_gateway   = false  # Production: HA with NAT per AZ
+vpc_cidr           = "10.0.0.0/16"
+enable_nat_gateway = true
+single_nat_gateway = false # Production: HA with NAT per AZ
 # AWS ACADEMY: Set to true for cost savings (single NAT = $32/mo vs $96/mo)
 enable_dns_hostnames = true
 enable_dns_support   = true
@@ -49,19 +49,19 @@ cluster_enabled_log_types       = ["api", "audit", "authenticator"]
 # Node Group Configuration - Production
 # -----------------------------------------------------------------------------
 
-node_instance_types = ["t3.large"]  # Production: 2 vCPU, 8 GB RAM per node
+node_instance_types = ["t3.large"] # Production: 2 vCPU, 8 GB RAM per node
 # AWS ACADEMY: Use ["t3.medium"] for cost savings (2 vCPU, 4 GB RAM)
 
-node_disk_size = 50  # Production: 50 GB per node
+node_disk_size = 50 # Production: 50 GB per node
 # AWS ACADEMY: Use 20 for minimum required disk space
 
-node_desired_size = 3   # Production: 3 nodes across 3 AZs
+node_desired_size = 3 # Production: 3 nodes across 3 AZs
 # AWS ACADEMY: Use 2 for minimum HA
 
-node_min_size = 2  # Production: always 2 nodes minimum
+node_min_size = 2 # Production: always 2 nodes minimum
 # AWS ACADEMY: Use 1 to allow scaling down in idle
 
-node_max_size = 10  # Production: scale up to 10 nodes
+node_max_size = 10 # Production: scale up to 10 nodes
 # AWS ACADEMY: Use 4 to stay within credit limits
 
 node_capacity_type = "ON_DEMAND"
@@ -77,12 +77,12 @@ app_namespace = "ftc-app"
 # SigNoz Configuration - Production
 # -----------------------------------------------------------------------------
 
-enable_signoz = true  # Production: Full observability enabled
+enable_signoz = true # Production: Full observability enabled
 # AWS ACADEMY: Set to false to avoid 20-minute timeout and save resources
 
 signoz_namespace     = "signoz"
 signoz_chart_version = "0.32.0"
-signoz_storage_size  = "20Gi"  # Adjust based on log volume
+signoz_storage_size  = "20Gi" # Adjust based on log volume
 
 # -----------------------------------------------------------------------------
 # AWS Load Balancer Controller
