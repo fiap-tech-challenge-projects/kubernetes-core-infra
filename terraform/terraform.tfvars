@@ -49,20 +49,20 @@ cluster_enabled_log_types       = ["api", "audit", "authenticator"]
 # Node Group Configuration - Production
 # -----------------------------------------------------------------------------
 
-node_instance_types = ["t3.large"] # Production: 2 vCPU, 8 GB RAM per node
-# AWS ACADEMY: Use ["t3.medium"] for cost savings (2 vCPU, 4 GB RAM)
+node_instance_types = ["t3.medium"] # Start with t3.medium (2 vCPU, 4 GB RAM)
+# Can upgrade to ["t3.large"] later if needed (2 vCPU, 8 GB RAM)
 
-node_disk_size = 50 # Production: 50 GB per node
-# AWS ACADEMY: Use 20 for minimum required disk space
+node_disk_size = 30 # 30 GB per node
+# Production: Can increase to 50 GB
 
-node_desired_size = 3 # Production: 3 nodes across 3 AZs
-# AWS ACADEMY: Use 2 for minimum HA
+node_desired_size = 2 # Start with 2 nodes for HA
+# Production: Can scale to 3 nodes later
 
-node_min_size = 2 # Production: always 2 nodes minimum
-# AWS ACADEMY: Use 1 to allow scaling down in idle
+node_min_size = 1 # Allow scaling down to 1
+# Production: Use 2 for always-on HA
 
-node_max_size = 10 # Production: scale up to 10 nodes
-# AWS ACADEMY: Use 4 to stay within credit limits
+node_max_size = 4 # Scale up to 4 nodes
+# Production: Can increase to 10 later
 
 node_capacity_type = "ON_DEMAND"
 # COST OPTIMIZATION: Use "SPOT" for 70% savings (with interruption risk)
@@ -77,8 +77,8 @@ app_namespace = "ftc-app"
 # SigNoz Configuration - Production
 # -----------------------------------------------------------------------------
 
-enable_signoz = true # Production: Full observability enabled
-# AWS ACADEMY: Set to false to avoid 20-minute timeout and save resources
+enable_signoz = false # Disabled initially to speed up deployment
+# Enable after cluster is stable: set to true
 
 signoz_namespace     = "signoz"
 signoz_chart_version = "0.32.0"
