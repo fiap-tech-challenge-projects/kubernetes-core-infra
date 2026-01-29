@@ -11,7 +11,8 @@
 resource "aws_eks_cluster" "main" {
   name     = local.cluster_name
   version  = var.kubernetes_version
-  role_arn = data.aws_iam_role.lab_role.arn
+  role_arn = aws_iam_role.eks_cluster.arn  # Production: custom IAM role
+  # AWS ACADEMY: Use data.aws_iam_role.lab_role.arn instead
 
   vpc_config {
     subnet_ids              = concat(aws_subnet.public[*].id, aws_subnet.private[*].id)
@@ -62,7 +63,8 @@ resource "aws_kms_alias" "eks" {
 
 resource "aws_cloudwatch_log_group" "eks" {
   name              = "/aws/eks/${local.cluster_name}/cluster"
-  retention_in_days = 7 # Economia para AWS Academy
+  retention_in_days = 30  # Production: 30 days for troubleshooting
+  # AWS ACADEMY: Use retention_in_days = 7 for cost optimization
 
   tags = var.common_tags
 }
@@ -219,19 +221,40 @@ resource "aws_eks_addon" "kube_proxy" {
   tags = var.common_tags
 }
 
-# EBS CSI Driver
-# NOTE: Commented out for AWS Academy - causes timeout issues without IRSA support
-# If you need dynamic EBS volumes, install manually with proper LabRole permissions
-# resource "aws_eks_addon" "ebs_csi" {
-#   cluster_name = aws_eks_cluster.main.name
-#   addon_name   = "aws-ebs-csi-driver"
-#   # NOTE: AWS Academy - Cannot use IRSA, addon will use node role (LabRole)
-#   # In production, add: service_account_role_arn = aws_iam_role.ebs_csi_driver.arn
+# EBS CSI Driver (with node role permissions)
+# NOTE: Using node role instead of dedicated IRSA for simplicity
+# To use dedicated IRSA: uncomment ebs_csi_driver role in iam.tf and set service_account_role_arn below
+resource "aws_eks_addon" "ebs_csi" {
+  cluster_name = aws_eks_cluster.main.name
+  addon_name   = "aws-ebs-csi-driver"
+
+  # Production: Uses node role (aws_iam_role.eks_nodes has AmazonEBSCSIDriverPolicy attached)
+  # For dedicated IRSA: service_account_role_arn = aws_iam_role.ebs_csi_driver.arn
+
+  resolve_conflicts_on_create = "OVERWRITE"
+  resolve_conflicts_on_update = "OVERWRITE"
+
+  tags = var.common_tags
+
+  depends_on = [aws_eks_node_group.main]
+}
+
+# =============================================================================
+# AWS ACADEMY VERSION (COMMENTED OUT)
+# =============================================================================
+# EBS CSI Driver causes timeout issues in AWS Academy without proper IRSA support.
+# If needed in Academy, install manually with LabRole permissions:
 #
-#   resolve_conflicts_on_create = "OVERWRITE"
-#   resolve_conflicts_on_update = "OVERWRITE"
-#
-#   tags = var.common_tags
-#
-#   depends_on = [aws_eks_node_group.main]
-# }
+# # EBS CSI Driver - DISABLED for AWS Academy
+# # resource "aws_eks_addon" "ebs_csi" {
+# #   cluster_name = aws_eks_cluster.main.name
+# #   addon_name   = "aws-ebs-csi-driver"
+# #   # Uses LabRole (no IRSA available in Academy)
+# #
+# #   resolve_conflicts_on_create = "OVERWRITE"
+# #   resolve_conflicts_on_update = "OVERWRITE"
+# #
+# #   tags = var.common_tags
+# #
+# #   depends_on = [aws_eks_node_group.main]
+# # }

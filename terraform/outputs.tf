@@ -74,43 +74,69 @@ output "node_security_group_id" {
 # -----------------------------------------------------------------------------
 # OIDC Outputs (para IRSA)
 # -----------------------------------------------------------------------------
-# AWS ACADEMY: OIDC provider cannot be created due to IAM restrictions
-# In production, uncomment these outputs:
-#
-# output "oidc_provider_arn" {
-#   description = "ARN do OIDC Provider"
-#   value       = aws_iam_openid_connect_provider.eks.arn
-# }
-#
-# output "oidc_provider_url" {
-#   description = "URL do OIDC Provider"
-#   value       = aws_iam_openid_connect_provider.eks.url
-# }
+output "oidc_provider_arn" {
+  description = "ARN do OIDC Provider for IRSA"
+  value       = aws_iam_openid_connect_provider.eks.arn
+}
+
+output "oidc_provider_url" {
+  description = "URL do OIDC Provider (without https://)"
+  value       = replace(aws_iam_openid_connect_provider.eks.url, "https://", "")
+}
 
 # -----------------------------------------------------------------------------
 # IAM Outputs
 # -----------------------------------------------------------------------------
 
-output "lab_role_arn" {
-  description = "ARN da LabRole usada para EKS (AWS Academy)"
-  value       = data.aws_iam_role.lab_role.arn
+output "eks_cluster_role_arn" {
+  description = "ARN da IAM Role do EKS cluster"
+  value       = aws_iam_role.eks_cluster.arn
+}
+
+output "eks_cluster_role_name" {
+  description = "Nome da IAM Role do EKS cluster"
+  value       = aws_iam_role.eks_cluster.name
 }
 
 output "node_role_arn" {
-  description = "ARN da IAM Role dos nodes (LabRole no AWS Academy)"
-  value       = data.aws_iam_role.lab_role.arn
+  description = "ARN da IAM Role dos worker nodes"
+  value       = aws_iam_role.eks_nodes.arn
 }
 
-# NOTE: AWS Academy - These IRSA roles are not created
-# In production with custom IAM, these outputs would be available:
-# output "aws_lb_controller_role_arn" {
-#   description = "ARN da IAM Role do AWS LB Controller"
-#   value       = var.enable_aws_lb_controller ? aws_iam_role.aws_lb_controller[0].arn : null
+output "node_role_name" {
+  description = "Nome da IAM Role dos worker nodes"
+  value       = aws_iam_role.eks_nodes.name
+}
+
+output "aws_lb_controller_role_arn" {
+  description = "ARN da IAM Role do AWS Load Balancer Controller (IRSA)"
+  value       = aws_iam_role.aws_lb_controller.arn
+}
+
+output "aws_lb_controller_role_name" {
+  description = "Nome da IAM Role do AWS Load Balancer Controller"
+  value       = aws_iam_role.aws_lb_controller.name
+}
+
+# Uncomment if using dedicated IRSA for EBS CSI Driver (currently using node role)
+# output "ebs_csi_driver_role_arn" {
+#   description = "ARN da IAM Role do EBS CSI Driver (IRSA)"
+#   value       = aws_iam_role.ebs_csi_driver.arn
+# }
+
+# =============================================================================
+# AWS ACADEMY OUTPUTS (COMMENTED OUT)
+# =============================================================================
+# For AWS Academy, use these outputs instead:
+#
+# output "lab_role_arn" {
+#   description = "ARN da LabRole usada para EKS (AWS Academy)"
+#   value       = data.aws_iam_role.lab_role.arn
 # }
 #
-# output "ebs_csi_driver_role_arn" {
-#   description = "ARN da IAM Role do EBS CSI Driver"
-#   value       = aws_iam_role.ebs_csi_driver.arn
+# output "node_role_arn" {
+#   description = "ARN da IAM Role dos nodes (LabRole no AWS Academy)"
+#   value       = data.aws_iam_role.lab_role.arn
 # }
 
 # -----------------------------------------------------------------------------
