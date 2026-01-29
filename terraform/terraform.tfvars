@@ -31,8 +31,8 @@ common_tags = {
 
 vpc_cidr           = "10.0.0.0/16"
 enable_nat_gateway = true
-single_nat_gateway = false # Production: HA with NAT per AZ
-# AWS ACADEMY: Set to true for cost savings (single NAT = $32/mo vs $96/mo)
+single_nat_gateway = true # Single NAT Gateway for cost savings ($32/mo vs $96/mo)
+# Production: Set to false for HA with NAT per AZ
 enable_dns_hostnames = true
 enable_dns_support   = true
 
