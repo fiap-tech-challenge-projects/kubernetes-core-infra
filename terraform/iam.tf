@@ -25,7 +25,7 @@ resource "aws_iam_role" "eks_cluster" {
   })
 
   tags = merge(
-    local.common_tags,
+    var.common_tags,
     {
       Name = "${var.project_name}-eks-cluster-role-${var.environment}"
     }
@@ -60,7 +60,7 @@ resource "aws_iam_role" "eks_nodes" {
   })
 
   tags = merge(
-    local.common_tags,
+    var.common_tags,
     {
       Name = "${var.project_name}-eks-nodes-role-${var.environment}"
     }
@@ -101,7 +101,7 @@ resource "aws_iam_openid_connect_provider" "eks" {
   url             = aws_eks_cluster.main.identity[0].oidc[0].issuer
 
   tags = merge(
-    local.common_tags,
+    var.common_tags,
     {
       Name = "${var.project_name}-eks-oidc-${var.environment}"
     }
@@ -132,7 +132,7 @@ resource "aws_iam_role" "aws_lb_controller" {
   })
 
   tags = merge(
-    local.common_tags,
+    var.common_tags,
     {
       Name = "${var.project_name}-aws-lb-controller-role-${var.environment}"
     }
@@ -146,7 +146,7 @@ resource "aws_iam_policy" "aws_lb_controller" {
   policy = file("${path.module}/policies/aws-lb-controller-policy.json")
 
   tags = merge(
-    local.common_tags,
+    var.common_tags,
     {
       Name = "${var.project_name}-aws-lb-controller-policy-${var.environment}"
     }
