@@ -20,7 +20,12 @@ resource "aws_eks_node_group" "main" {
 
   capacity_type  = var.node_capacity_type
   instance_types = var.node_instance_types
-  disk_size      = var.node_disk_size
+  # disk_size is managed by launch template
+
+  launch_template {
+    id      = aws_launch_template.eks_nodes.id
+    version = "$Latest"
+  }
 
   scaling_config {
     desired_size = var.node_desired_size
@@ -47,39 +52,41 @@ resource "aws_eks_node_group" "main" {
 }
 
 # -----------------------------------------------------------------------------
-# Launch Template (Opcional - para customizacoes avancadas)
+# Launch Template - REQUIRED for AWS Load Balancer Controller
 # -----------------------------------------------------------------------------
+# Sets http_put_response_hop_limit=2 to allow IMDS access from pods
+# Without this, AWS LB Controller fails with "context deadline exceeded"
 
-# resource "aws_launch_template" "eks_nodes" {
-#   name_prefix = "${var.project_name}-nodes-"
-#
-#   block_device_mappings {
-#     device_name = "/dev/xvda"
-#
-#     ebs {
-#       volume_size           = var.node_disk_size
-#       volume_type           = "gp3"
-#       encrypted             = true
-#       delete_on_termination = true
-#     }
-#   }
-#
-#   metadata_options {
-#     http_endpoint               = "enabled"
-#     http_tokens                 = "required" # IMDSv2
-#     http_put_response_hop_limit = 2
-#   }
-#
-#   monitoring {
-#     enabled = true
-#   }
-#
-#   tag_specifications {
-#     resource_type = "instance"
-#     tags = merge(local.eks_tags, {
-#       Name = "${var.project_name}-node-${var.environment}"
-#     })
-#   }
-#
-#   tags = var.common_tags
-# }
+resource "aws_launch_template" "eks_nodes" {
+  name_prefix = "${var.project_name}-nodes-"
+
+  block_device_mappings {
+    device_name = "/dev/xvda"
+
+    ebs {
+      volume_size           = var.node_disk_size
+      volume_type           = "gp3"
+      encrypted             = true
+      delete_on_termination = true
+    }
+  }
+
+  metadata_options {
+    http_endpoint               = "enabled"
+    http_tokens                 = "required" # IMDSv2
+    http_put_response_hop_limit = 2          # CRITICAL: Required for AWS LB Controller
+  }
+
+  monitoring {
+    enabled = true
+  }
+
+  tag_specifications {
+    resource_type = "instance"
+    tags = merge(local.eks_tags, {
+      Name = "${var.project_name}-node-${var.environment}"
+    })
+  }
+
+  tags = var.common_tags
+}
