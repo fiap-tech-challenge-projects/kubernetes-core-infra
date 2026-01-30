@@ -49,8 +49,8 @@ cluster_enabled_log_types       = ["api", "audit", "authenticator"]
 # Node Group Configuration - Production
 # -----------------------------------------------------------------------------
 
-node_instance_types = ["t3.medium"] # Start with t3.medium (2 vCPU, 4 GB RAM)
-# Can upgrade to ["t3.large"] later if needed (2 vCPU, 8 GB RAM)
+node_instance_types = ["t3.small"] # t3.small (2 vCPU, 2 GB RAM) - smallest viable option
+# t3.medium blocked by free-tier filter, t3.micro too small (1GB RAM)
 
 node_disk_size = 30 # 30 GB per node
 # Production: Can increase to 50 GB
