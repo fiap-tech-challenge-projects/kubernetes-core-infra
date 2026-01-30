@@ -221,23 +221,19 @@ resource "aws_eks_addon" "kube_proxy" {
   tags = var.common_tags
 }
 
-# EBS CSI Driver (with node role permissions)
-# NOTE: Using node role instead of dedicated IRSA for simplicity
-# To use dedicated IRSA: uncomment ebs_csi_driver role in iam.tf and set service_account_role_arn below
-resource "aws_eks_addon" "ebs_csi" {
-  cluster_name = aws_eks_cluster.main.name
-  addon_name   = "aws-ebs-csi-driver"
-
-  # Production: Uses node role (aws_iam_role.eks_nodes has AmazonEBSCSIDriverPolicy attached)
-  # For dedicated IRSA: service_account_role_arn = aws_iam_role.ebs_csi_driver.arn
-
-  resolve_conflicts_on_create = "OVERWRITE"
-  resolve_conflicts_on_update = "OVERWRITE"
-
-  tags = var.common_tags
-
-  depends_on = [aws_eks_node_group.main]
-}
+# EBS CSI Driver - DISABLED for Free Tier / Limited Accounts
+# Free Tier accounts often have permission issues with EBS CSI Driver causing DEGRADED state
+# Will use default gp2 storage class instead (no CSI driver required)
+#
+# To enable later (requires proper IAM permissions):
+# resource "aws_eks_addon" "ebs_csi" {
+#   cluster_name = aws_eks_cluster.main.name
+#   addon_name   = "aws-ebs-csi-driver"
+#   resolve_conflicts_on_create = "OVERWRITE"
+#   resolve_conflicts_on_update = "OVERWRITE"
+#   tags = var.common_tags
+#   depends_on = [aws_eks_node_group.main]
+# }
 
 # =============================================================================
 # AWS ACADEMY VERSION (COMMENTED OUT)
