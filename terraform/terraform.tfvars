@@ -49,11 +49,11 @@ cluster_enabled_log_types       = ["api", "audit", "authenticator"]
 # Node Group Configuration - Production
 # -----------------------------------------------------------------------------
 
-node_instance_types = ["t3.small"] # t3.small (2 vCPU, 2 GB RAM) - smallest viable option
-# t3.medium blocked by free-tier filter, t3.micro too small (1GB RAM)
+node_instance_types = ["t3.micro"] # FREE TIER: 750 hours/month free (2 vCPU, 1 GB RAM)
+# Warning: 1GB RAM is very limited - may need to scale down workloads
 
-node_disk_size = 30 # 30 GB per node
-# Production: Can increase to 50 GB
+node_disk_size = 20 # FREE TIER: Minimum disk size (20 GB)
+# Production: Use 30-50 GB
 
 node_desired_size = 2 # Start with 2 nodes for HA
 # Production: Can scale to 3 nodes later
