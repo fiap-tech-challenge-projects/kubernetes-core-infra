@@ -82,11 +82,12 @@ resource "aws_iam_role_policy_attachment" "ecr_read_only" {
   role       = aws_iam_role.eks_nodes.name
 }
 
-# Additional policy for EBS CSI Driver (managed by node role)
-resource "aws_iam_role_policy_attachment" "ebs_csi_policy" {
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
-  role       = aws_iam_role.eks_nodes.name
-}
+# EBS CSI Driver Policy - DISABLED (not using EBS CSI addon)
+# If enabling EBS CSI addon later, uncomment this:
+# resource "aws_iam_role_policy_attachment" "ebs_csi_policy" {
+#   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+#   role       = aws_iam_role.eks_nodes.name
+# }
 
 # -----------------------------------------------------------------------------
 # OIDC Provider for IRSA (IAM Roles for Service Accounts)
