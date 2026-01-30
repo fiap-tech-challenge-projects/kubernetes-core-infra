@@ -1,0 +1,71 @@
+# =============================================================================
+# Resource Quotas - FIAP Tech Challenge
+# =============================================================================
+# Limites de recursos para o namespace da aplicacao
+# =============================================================================
+
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: ftc-app-quota
+  namespace: ftc-app
+  labels:
+    app.kubernetes.io/part-of: fiap-tech-challenge
+spec:
+  hard:
+    # Limites de CPU
+    requests.cpu: "4"
+    limits.cpu: "8"
+
+    # Limites de Memoria
+    requests.memory: "8Gi"
+    limits.memory: "16Gi"
+
+    # Limites de Storage
+    requests.storage: "50Gi"
+    persistentvolumeclaims: "10"
+
+    # Limites de Objetos
+    pods: "20"
+    services: "10"
+    secrets: "20"
+    configmaps: "20"
+
+---
+# LimitRange para defaults
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: ftc-app-limits
+  namespace: ftc-app
+  labels:
+    app.kubernetes.io/part-of: fiap-tech-challenge
+spec:
+  limits:
+    # Defaults para containers
+    - type: Container
+      default:
+        cpu: "500m"
+        memory: "512Mi"
+      defaultRequest:
+        cpu: "100m"
+        memory: "128Mi"
+      min:
+        cpu: "50m"
+        memory: "64Mi"
+      max:
+        cpu: "2"
+        memory: "4Gi"
+
+    # Defaults para pods
+    - type: Pod
+      max:
+        cpu: "4"
+        memory: "8Gi"
+
+    # Defaults para PVCs
+    - type: PersistentVolumeClaim
+      min:
+        storage: "1Gi"
+      max:
+        storage: "20Gi"

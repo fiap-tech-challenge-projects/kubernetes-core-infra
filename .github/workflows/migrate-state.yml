@@ -1,0 +1,104 @@
+name: Migrate Terraform State (Remove K8s Resources)
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to migrate'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+env:
+  TF_VERSION: '1.5.0'
+  AWS_REGION: 'us-east-1'
+  TF_WORKING_DIR: 'terraform'
+
+jobs:
+  migrate-state:
+    name: Remove K8s Resources from State
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+
+    steps:
+      - name: Checkout OLD code (before refactor)
+        uses: actions/checkout@v4
+        with:
+          ref: 8e27e28  # Commit BEFORE the refactor
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          # AWS_SESSION_TOKEN is optional (only required for AWS Academy)
+          # If not set, it will be empty and the action will ignore it
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Get AWS Account ID
+        id: account
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          echo "account_id=${ACCOUNT_ID}" >> $GITHUB_OUTPUT
+          echo "AWS Account ID: ${ACCOUNT_ID}"
+
+      - name: Terraform Init (OLD code)
+        run: |
+          terraform init \
+            -backend-config="bucket=fiap-tech-challenge-tf-state-${{ steps.account.outputs.account_id }}"
+        working-directory: ${{ env.TF_WORKING_DIR }}
+
+      - name: Select Workspace
+        run: |
+          terraform workspace select ${{ github.event.inputs.environment }} || terraform workspace new ${{ github.event.inputs.environment }}
+        working-directory: ${{ env.TF_WORKING_DIR }}
+
+      - name: Remove K8s Resources from State
+        run: |
+          echo "Removing Kubernetes resources from Terraform state..."
+
+          # List current state
+          echo "Current state resources:"
+          terraform state list
+
+          # Remove Kubernetes resources (Phase 2 resources)
+          terraform state rm 'kubernetes_namespace.staging' 2>/dev/null || echo "Resource not found"
+          terraform state rm 'kubernetes_namespace.production' 2>/dev/null || echo "Resource not found"
+          terraform state rm 'kubernetes_namespace.signoz[0]' 2>/dev/null || echo "Resource not found"
+          terraform state rm 'helm_release.aws_lb_controller[0]' 2>/dev/null || echo "Resource not found"
+          terraform state rm 'helm_release.metrics_server' 2>/dev/null || echo "Resource not found"
+          terraform state rm 'helm_release.signoz[0]' 2>/dev/null || echo "Resource not found"
+
+          echo ""
+          echo "Remaining state resources:"
+          terraform state list
+
+          echo ""
+          echo "✓ Kubernetes resources removed from state"
+          echo "✓ These resources still exist in the cluster and will be managed by kubernetes-addons (Phase 2)"
+        working-directory: ${{ env.TF_WORKING_DIR }}
+
+      - name: Summary
+        run: |
+          echo "## State Migration Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Removed Kubernetes resources from Terraform state:" >> $GITHUB_STEP_SUMMARY
+          echo "- kubernetes_namespace.staging" >> $GITHUB_STEP_SUMMARY
+          echo "- kubernetes_namespace.production" >> $GITHUB_STEP_SUMMARY
+          echo "- kubernetes_namespace.signoz[0]" >> $GITHUB_STEP_SUMMARY
+          echo "- helm_release.aws_lb_controller[0]" >> $GITHUB_STEP_SUMMARY
+          echo "- helm_release.metrics_server" >> $GITHUB_STEP_SUMMARY
+          echo "- helm_release.signoz[0]" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Next steps:**" >> $GITHUB_STEP_SUMMARY
+          echo "1. Re-run the Deploy Staging workflow" >> $GITHUB_STEP_SUMMARY
+          echo "2. Deploy kubernetes-addons (Phase 2) to import these resources" >> $GITHUB_STEP_SUMMARY
