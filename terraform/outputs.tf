@@ -140,6 +140,25 @@ output "aws_lb_controller_role_name" {
 # }
 
 # -----------------------------------------------------------------------------
+# ECR Outputs
+# -----------------------------------------------------------------------------
+
+output "ecr_repository_url" {
+  description = "URL do repositório ECR"
+  value       = aws_ecr_repository.app.repository_url
+}
+
+output "ecr_repository_arn" {
+  description = "ARN do repositório ECR"
+  value       = aws_ecr_repository.app.arn
+}
+
+output "ecr_repository_name" {
+  description = "Nome do repositório ECR"
+  value       = aws_ecr_repository.app.name
+}
+
+# -----------------------------------------------------------------------------
 # Namespace Outputs
 # -----------------------------------------------------------------------------
 # NOTE: Namespace outputs moved to kubernetes-addons module (Phase 2)
@@ -187,6 +206,10 @@ output "summary" {
       Desired: ${var.node_desired_size}
       Min: ${var.node_min_size}
       Max: ${var.node_max_size}
+
+    ECR Repository:
+      URL: ${aws_ecr_repository.app.repository_url}
+      Nome: ${aws_ecr_repository.app.name}
 
     Configurar kubectl:
       aws eks update-kubeconfig --region ${var.aws_region} --name ${aws_eks_cluster.main.name}
