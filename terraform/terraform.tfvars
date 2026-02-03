@@ -49,9 +49,9 @@ cluster_enabled_log_types       = ["api", "audit", "authenticator"]
 # Node Group Configuration - Production
 # -----------------------------------------------------------------------------
 
-node_instance_types = ["t3.medium"] # 2 vCPU, 4 GB RAM (cost-optimized)
-# Cost: ~$30/month for 1 node
-# Good balance for EKS with moderate workloads
+node_instance_types = ["t3.small"] # 2 vCPU, 2 GB RAM (AWS credits)
+# Cost: ~$15/month for 1 node (~$30 for 2 nodes)
+# Minimum viable for EKS with CloudWatch + addons
 
 node_disk_size = 30 # 30 GB for logs and container images
 
