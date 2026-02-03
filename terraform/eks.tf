@@ -221,6 +221,19 @@ resource "aws_eks_addon" "kube_proxy" {
   tags = var.common_tags
 }
 
+# CloudWatch Observability Addon - Container Insights + Logs
+resource "aws_eks_addon" "cloudwatch_observability" {
+  cluster_name = aws_eks_cluster.main.name
+  addon_name   = "amazon-cloudwatch-observability"
+
+  resolve_conflicts_on_create = "OVERWRITE"
+  resolve_conflicts_on_update = "OVERWRITE"
+
+  tags = var.common_tags
+
+  depends_on = [aws_eks_node_group.main]
+}
+
 # EBS CSI Driver - DISABLED for Free Tier / Limited Accounts
 # Free Tier accounts often have permission issues with EBS CSI Driver causing DEGRADED state
 # Will use default gp2 storage class instead (no CSI driver required)

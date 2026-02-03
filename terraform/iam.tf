@@ -88,6 +88,12 @@ resource "aws_iam_role_policy_attachment" "secrets_manager_read" {
   role       = aws_iam_role.eks_nodes.name
 }
 
+# CloudWatch Agent Policy - Required for Container Insights and logs
+resource "aws_iam_role_policy_attachment" "cloudwatch_agent_policy" {
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+  role       = aws_iam_role.eks_nodes.name
+}
+
 # EBS CSI Driver Policy - DISABLED (not using EBS CSI addon)
 # If enabling EBS CSI addon later, uncomment this:
 # resource "aws_iam_role_policy_attachment" "ebs_csi_policy" {

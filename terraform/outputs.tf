@@ -174,12 +174,6 @@ output "kubeconfig_command" {
 }
 
 # -----------------------------------------------------------------------------
-# SigNoz Access
-# -----------------------------------------------------------------------------
-# NOTE: SigNoz outputs moved to kubernetes-addons module (Phase 2)
-# SigNoz is installed after cluster exists to avoid provider init issues
-
-# -----------------------------------------------------------------------------
 # Summary Output
 # -----------------------------------------------------------------------------
 
@@ -215,7 +209,7 @@ output "summary" {
       aws eks update-kubeconfig --region ${var.aws_region} --name ${aws_eks_cluster.main.name}
 
     Proximo passo:
-      Deploy kubernetes-addons (Phase 2) para instalar namespaces, LB Controller e SigNoz
+      Deploy kubernetes-addons (Phase 2) para instalar namespaces, LB Controller e External Secrets
     ================================================================================
   EOT
 }

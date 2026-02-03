@@ -120,6 +120,6 @@ kubectl get namespaces
 
 echo -e "\n${YELLOW}Comandos uteis:${NC}"
 echo "  kubectl get pods -n $APP_NAMESPACE        # Ver pods da aplicacao"
-echo "  kubectl get pods -n signoz                # Ver pods do SigNoz"
 echo "  kubectl logs -f <pod> -n $APP_NAMESPACE   # Ver logs de um pod"
-echo "  kubectl port-forward -n signoz svc/signoz-frontend 3301:3301  # Acessar SigNoz"
+echo "  kubectl top pods -n $APP_NAMESPACE         # Ver uso de recursos"
+echo "  kubectl describe pod <pod> -n $APP_NAMESPACE # Detalhar pod"
