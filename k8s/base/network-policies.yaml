@@ -108,32 +108,6 @@ spec:
           port: 5432
 
 ---
-# Allow egress to SigNoz (OpenTelemetry)
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: allow-egress-signoz
-  namespace: ftc-app
-  labels:
-    app.kubernetes.io/part-of: fiap-tech-challenge
-spec:
-  podSelector:
-    matchLabels:
-      app: fiap-tech-challenge-api
-  policyTypes:
-    - Egress
-  egress:
-    - to:
-        - namespaceSelector:
-            matchLabels:
-              name: signoz
-      ports:
-        - protocol: TCP
-          port: 4317 # OTLP gRPC
-        - protocol: TCP
-          port: 4318 # OTLP HTTP
-
----
 # Allow egress to AWS services (HTTPS)
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy

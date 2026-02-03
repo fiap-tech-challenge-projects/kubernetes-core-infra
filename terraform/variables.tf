@@ -128,7 +128,7 @@ variable "cluster_enabled_log_types" {
 variable "node_instance_types" {
   description = "Tipos de instancia EC2 para os nodes"
   type        = list(string)
-  default     = ["t3.large"] # Optimal for full observability stack
+  default     = ["t3.medium"] # Cost-optimized (2 vCPU, 4GB RAM)
 }
 
 variable "node_disk_size" {
@@ -199,34 +199,6 @@ variable "app_namespace" {
     condition     = can(regex("^[a-z]([a-z0-9-]*[a-z0-9])?$", var.app_namespace))
     error_message = "Namespace deve ser lowercase com letras, numeros e hifens."
   }
-}
-
-# -----------------------------------------------------------------------------
-# SigNoz Configuration
-# -----------------------------------------------------------------------------
-
-variable "enable_signoz" {
-  description = "Habilitar instalacao do SigNoz para observabilidade"
-  type        = bool
-  default     = true
-}
-
-variable "signoz_namespace" {
-  description = "Namespace para o SigNoz"
-  type        = string
-  default     = "signoz"
-}
-
-variable "signoz_chart_version" {
-  description = "Versao do Helm chart do SigNoz"
-  type        = string
-  default     = "0.32.0"
-}
-
-variable "signoz_storage_size" {
-  description = "Tamanho do storage para ClickHouse do SigNoz"
-  type        = string
-  default     = "20Gi"
 }
 
 # -----------------------------------------------------------------------------

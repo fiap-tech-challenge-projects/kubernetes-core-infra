@@ -11,7 +11,6 @@
     "tf:destroy": "cd terraform && terraform destroy",
     "tf:fmt": "cd terraform && terraform fmt -recursive",
     "tf:validate": "cd terraform && terraform validate",
-    "k8s:configure": "./scripts/configure-kubectl.sh",
-    "signoz:access": "./scripts/access-signoz.sh"
+    "k8s:configure": "./scripts/configure-kubectl.sh"
   }
 }

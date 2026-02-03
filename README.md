@@ -4,7 +4,7 @@ Infraestrutura de Kubernetes (EKS) para o FIAP Tech Challenge - Fase 3.
 
 ## Visao Geral
 
-Este repositorio contem a infraestrutura como codigo (IaC) para provisionar e gerenciar o cluster EKS na AWS, incluindo VPC, subnets, node groups, e addons como SigNoz para observabilidade.
+Este repositorio contem a infraestrutura como codigo (IaC) para provisionar e gerenciar o cluster EKS na AWS, incluindo VPC, subnets, node groups. Observabilidade via CloudWatch Container Insights.
 
 ### Arquitetura
 
@@ -46,11 +46,11 @@ Este repositorio contem a infraestrutura como codigo (IaC) para provisionar e ge
 - **Node Group**: t3.medium (2-4 nodes)
 - **Addons**: VPC CNI, CoreDNS, kube-proxy, EBS CSI Driver
 
-### Observabilidade (SigNoz)
-- **ClickHouse**: Backend de dados
-- **Query Service**: Consultas
-- **Frontend**: Dashboard web
-- **OTel Collector**: Coleta de telemetria
+### Observabilidade (CloudWatch)
+- **CloudWatch Container Insights**: Metricas de cluster e pods
+- **CloudWatch Logs**: Application logs estruturados (JSON)
+- **CloudWatch Dashboards**: Visualizacao de metricas
+- **CloudWatch Alarms**: Alertas automatizados
 
 ### Seguranca
 - **KMS**: Criptografia de secrets
@@ -65,7 +65,7 @@ Este repositorio contem a infraestrutura como codigo (IaC) para provisionar e ge
 | Terraform | >= 1.5 | Infrastructure as Code |
 | AWS EKS | 1.28 | Kubernetes gerenciado |
 | Helm | 3.x | Package manager K8s |
-| SigNoz | 0.32.0 | Observabilidade OpenTelemetry |
+| CloudWatch | - | Observabilidade AWS nativa |
 | AWS LB Controller | 1.6.2 | Ingress com ALB |
 
 ## Pre-requisitos
@@ -137,17 +137,21 @@ kubectl get nodes
 kubectl get pods -A
 ```
 
-## Acessar SigNoz
+## Acessar CloudWatch
 
 ```bash
-# Usar script
-./scripts/access-signoz.sh
+# Abrir CloudWatch Console
+open https://console.aws.amazon.com/cloudwatch
 
-# Ou manualmente
-kubectl port-forward -n signoz svc/signoz-frontend 3301:3301
+# Ver logs
+aws logs tail /aws/containerinsights/fiap-tech-challenge-development/application --follow
 
-# Abrir no browser
-open http://localhost:3301
+# Query logs
+aws logs start-query \
+  --log-group-name /aws/containerinsights/fiap-tech-challenge-development/application \
+  --start-time $(date -u -d '1 hour ago' +%s) \
+  --end-time $(date -u +%s) \
+  --query-string 'fields @timestamp, @message | filter level = 50 | sort @timestamp desc'
 ```
 
 ## Variaveis de Configuracao
@@ -161,7 +165,6 @@ open http://localhost:3301
 | `node_desired_size` | Nodes desejados | `2` |
 | `node_min_size` | Minimo de nodes | `1` |
 | `node_max_size` | Maximo de nodes | `4` |
-| `enable_signoz` | Instalar SigNoz | `true` |
 | `enable_aws_lb_controller` | Instalar ALB Controller | `true` |
 
 Ver `terraform/variables.tf` para lista completa.
@@ -178,9 +181,6 @@ terraform output cluster_endpoint
 # Comando para configurar kubectl
 terraform output kubeconfig_command
 
-# Endpoint do SigNoz OTel Collector
-terraform output signoz_otel_endpoint
-
 # Resumo completo
 terraform output summary
 ```
@@ -196,7 +196,6 @@ kubernetes-core-infra/
 │   ├── iam.tf                  # IAM roles e policies
 │   ├── eks.tf                  # Cluster EKS
 │   ├── node-groups.tf          # Node groups
-│   ├── addons.tf               # SigNoz, ALB Controller
 │   ├── outputs.tf              # Outputs
 │   ├── terraform.tfvars        # Valores das variaveis
 │   └── policies/
@@ -206,11 +205,8 @@ kubernetes-core-infra/
 │   │   ├── namespace.yaml      # Namespace da app
 │   │   ├── network-policies.yaml
 │   │   └── resource-quotas.yaml
-│   └── signoz/
-│       └── otel-collector-config.yaml
 ├── scripts/
-│   ├── configure-kubectl.sh    # Configurar kubectl
-│   └── access-signoz.sh        # Acessar dashboard SigNoz
+│   └── configure-kubectl.sh    # Configurar kubectl
 ├── .github/
 │   └── workflows/
 │       └── terraform.yml       # CI/CD
@@ -240,7 +236,7 @@ O pipeline do GitHub Actions executa:
 ### k8s-main-service
 - Deploya pods no cluster EKS
 - Usa o namespace `ftc-app` criado aqui
-- Envia telemetria para SigNoz
+- Envia logs para CloudWatch Container Insights
 
 ### lambda-api-handler
 - Acessa o RDS na mesma VPC
@@ -268,16 +264,6 @@ kubectl describe node <node-name>
 
 # Verificar security groups
 aws ec2 describe-security-groups --group-ids <sg-id>
-```
-
-### SigNoz nao inicia
-
-```bash
-# Verificar PVCs
-kubectl get pvc -n signoz
-
-# Verificar logs
-kubectl logs -n signoz -l app.kubernetes.io/component=clickhouse
 ```
 
 ## Cleanup

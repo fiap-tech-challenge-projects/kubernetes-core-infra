@@ -49,21 +49,18 @@ cluster_enabled_log_types       = ["api", "audit", "authenticator"]
 # Node Group Configuration - Production
 # -----------------------------------------------------------------------------
 
-node_instance_types = ["t3.large"] # 2 vCPU, 8 GB RAM (optimal for full stack)
-# Cost: ~$60/month for 1 node (same as 2x t3.medium but more RAM)
-# Alternative: Use ["t3.large", "t3a.large"] for spot instance flexibility
+node_instance_types = ["t3.medium"] # 2 vCPU, 4 GB RAM (cost-optimized)
+# Cost: ~$30/month for 1 node
+# Good balance for EKS with moderate workloads
 
-node_disk_size = 30 # 30 GB for observability logs and container images
-# SigNoz ClickHouse needs persistent storage
+node_disk_size = 30 # 30 GB for logs and container images
 
-node_desired_size = 1 # Single node for cost optimization (staging)
-# Production: Use 2-3 nodes for high availability
+node_desired_size = 2 # 2 nodes for reliability (can handle pod distribution)
+# Prevents "Too many pods" errors and allows rolling updates
 
-node_min_size = 1 # Keep at least 1 node running
-# Can scale to 0 manually for cost savings when not testing
+node_min_size = 1 # Can scale down to 1 node if needed
 
-node_max_size = 3 # Scale up to 3 nodes if needed
-# Autoscaling based on CPU/memory pressure
+node_max_size = 3 # Scale up to 3 nodes under load
 
 node_capacity_type = "ON_DEMAND"
 # COST OPTIMIZATION: Use "SPOT" for 70% savings (with interruption risk)
@@ -74,16 +71,6 @@ node_capacity_type = "ON_DEMAND"
 
 app_namespace = "ftc-app"
 
-# -----------------------------------------------------------------------------
-# SigNoz Configuration - Production
-# -----------------------------------------------------------------------------
-
-enable_signoz = false # Disabled initially to speed up deployment
-# Enable after cluster is stable: set to true
-
-signoz_namespace     = "signoz"
-signoz_chart_version = "0.32.0"
-signoz_storage_size  = "20Gi" # Adjust based on log volume
 
 # -----------------------------------------------------------------------------
 # AWS Load Balancer Controller
@@ -106,9 +93,6 @@ aws_lb_controller_version = "1.6.2"
 # node_desired_size   = 2              # Minimum HA
 # node_min_size       = 1              # Allow scale-down to 1
 # node_max_size       = 4              # Credit limit
-#
-# # Observability
-# enable_signoz = false  # Avoid timeout and save ~2GB RAM
 #
 # TOTAL ACADEMY COST: ~$180/month
 # - EKS Cluster: $73
