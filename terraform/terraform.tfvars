@@ -49,20 +49,21 @@ cluster_enabled_log_types       = ["api", "audit", "authenticator"]
 # Node Group Configuration - Production
 # -----------------------------------------------------------------------------
 
-node_instance_types = ["t3.micro"] # FREE TIER: 750 hours/month free (2 vCPU, 1 GB RAM)
-# Warning: 1GB RAM is very limited - may need to scale down workloads
+node_instance_types = ["t3.large"] # 2 vCPU, 8 GB RAM (optimal for full stack)
+# Cost: ~$60/month for 1 node (same as 2x t3.medium but more RAM)
+# Alternative: Use ["t3.large", "t3a.large"] for spot instance flexibility
 
-node_disk_size = 20 # FREE TIER: Minimum disk size (20 GB)
-# Production: Use 30-50 GB
+node_disk_size = 30 # 30 GB for observability logs and container images
+# SigNoz ClickHouse needs persistent storage
 
-node_desired_size = 2 # Start with 2 nodes for HA
-# Production: Can scale to 3 nodes later
+node_desired_size = 1 # Single node for cost optimization (staging)
+# Production: Use 2-3 nodes for high availability
 
-node_min_size = 1 # Allow scaling down to 1
-# Production: Use 2 for always-on HA
+node_min_size = 1 # Keep at least 1 node running
+# Can scale to 0 manually for cost savings when not testing
 
-node_max_size = 4 # Scale up to 4 nodes
-# Production: Can increase to 10 later
+node_max_size = 3 # Scale up to 3 nodes if needed
+# Autoscaling based on CPU/memory pressure
 
 node_capacity_type = "ON_DEMAND"
 # COST OPTIMIZATION: Use "SPOT" for 70% savings (with interruption risk)

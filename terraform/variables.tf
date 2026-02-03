@@ -128,7 +128,7 @@ variable "cluster_enabled_log_types" {
 variable "node_instance_types" {
   description = "Tipos de instancia EC2 para os nodes"
   type        = list(string)
-  default     = ["t3.medium"] # Bom custo-beneficio para AWS Academy
+  default     = ["t3.large"] # Optimal for full observability stack
 }
 
 variable "node_disk_size" {
