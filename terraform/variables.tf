@@ -128,7 +128,7 @@ variable "cluster_enabled_log_types" {
 variable "node_instance_types" {
   description = "Tipos de instancia EC2 para os nodes"
   type        = list(string)
-  default     = ["t3.medium"] # Cost-optimized (2 vCPU, 4GB RAM)
+  default     = ["t3.small"] # Cost-optimized (2 vCPU, 2GB RAM)
 }
 
 variable "node_disk_size" {
