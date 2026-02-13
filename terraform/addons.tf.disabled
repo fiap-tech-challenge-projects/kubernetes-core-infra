@@ -5,16 +5,16 @@
 # =============================================================================
 
 # -----------------------------------------------------------------------------
-# Namespace para Aplicacao - Staging (Homologacao)
+# Namespace para Aplicacao - Development
 # -----------------------------------------------------------------------------
 
-resource "kubernetes_namespace" "staging" {
+resource "kubernetes_namespace" "development" {
   metadata {
-    name = "${var.app_namespace}-staging"
+    name = "${var.app_namespace}-development"
 
     labels = {
-      name        = "${var.app_namespace}-staging"
-      environment = "staging"
+      name        = "${var.app_namespace}-development"
+      environment = "development"
       managed-by  = "terraform"
     }
   }

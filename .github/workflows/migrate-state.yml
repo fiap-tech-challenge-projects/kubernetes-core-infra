@@ -6,10 +6,10 @@ on:
       environment:
         description: 'Environment to migrate'
         required: true
-        default: 'staging'
+        default: 'development'
         type: choice
         options:
-          - staging
+          - development
           - production
 
 env:
@@ -72,6 +72,7 @@ jobs:
 
           # Remove Kubernetes resources (Phase 2 resources)
           terraform state rm 'kubernetes_namespace.staging' 2>/dev/null || echo "Resource not found"
+          terraform state rm 'kubernetes_namespace.development' 2>/dev/null || echo "Resource not found"
           terraform state rm 'kubernetes_namespace.production' 2>/dev/null || echo "Resource not found"
           terraform state rm 'kubernetes_namespace.signoz[0]' 2>/dev/null || echo "Resource not found"
           terraform state rm 'helm_release.aws_lb_controller[0]' 2>/dev/null || echo "Resource not found"
@@ -93,6 +94,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Removed Kubernetes resources from Terraform state:" >> $GITHUB_STEP_SUMMARY
           echo "- kubernetes_namespace.staging" >> $GITHUB_STEP_SUMMARY
+          echo "- kubernetes_namespace.development" >> $GITHUB_STEP_SUMMARY
           echo "- kubernetes_namespace.production" >> $GITHUB_STEP_SUMMARY
           echo "- kubernetes_namespace.signoz[0]" >> $GITHUB_STEP_SUMMARY
           echo "- helm_release.aws_lb_controller[0]" >> $GITHUB_STEP_SUMMARY

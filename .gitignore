@@ -1,52 +1,44 @@
-# Node
-node_modules/
-package-lock.json
-/dist
-/build
-
-# Terraform
-terraform/.terraform/
-terraform/*.tfstate
-terraform/*.tfstate.*
-terraform/*.tfplan
-terraform/.terraform.lock.hcl
-terraform/crash.log
-terraform/crash.*.log
-terraform/override.tf
-terraform/override.tf.json
-terraform/*_override.tf
-terraform/*_override.tf.json
-
-# Terraform sensitive files
-*.tfvars.local
-*secret*.tfvars
-
-# Logs
-logs
-*.log
-npm-debug.log*
-
-# OS
-.DS_Store
-Thumbs.db
-
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-*~
-
-# Tests
-/coverage
-
-# Environment
-.env
-.env.*
-
-# Temp
-.temp
-.tmp
 
 # Claude Code guidance file
+# Environment
+# IDE
+# Logs
+# Node
+# OS
+# Temp
+# Terraform
+# Terraform sensitive files
+# Tests
+*.log
+*.swo
+*.swp
+*.tfvars.local
+*secret*.tfvars
+*~
+.DS_Store
+.env
+.env.*
+.idea/
+.temp
+.tmp
+.vscode/
+/build
+/coverage
+/dist
 CLAUDE.md
+Thumbs.db
+logs
+node_modules/
+npm-debug.log*
+package-lock.json
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/*_override.tf
+terraform/*_override.tf.json
+terraform/.terraform.lock.hcl
+terraform/.terraform/
+terraform/crash.*.log
+terraform/crash.log
+terraform/override.tf
+terraform/override.tf.json
+tfplan

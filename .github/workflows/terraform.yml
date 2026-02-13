@@ -22,10 +22,10 @@ on:
       environment:
         description: 'Environment to deploy'
         required: true
-        default: 'staging'
+        default: 'development'
         type: choice
         options:
-          - staging
+          - development
           - production
       action:
         description: 'Terraform action to perform'
@@ -102,16 +102,16 @@ jobs:
         working-directory: ${{ env.TF_WORKING_DIR }}
 
   # ---------------------------------------------------------------------------
-  # Deploy to Staging (develop branch)
+  # Deploy to Development (develop branch)
   # ---------------------------------------------------------------------------
-  deploy-staging:
-    name: Deploy Staging
+  deploy-development:
+    name: Deploy Development
     runs-on: ubuntu-latest
     needs: validate
     if: |
       (github.ref == 'refs/heads/develop' && github.event_name == 'push') ||
-      (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging' && github.event.inputs.action == 'apply')
-    environment: staging
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'development' && github.event.inputs.action == 'apply')
+    environment: development
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -146,13 +146,14 @@ jobs:
 
       - name: Terraform Workspace
         run: |
-          terraform workspace select staging || terraform workspace new staging
+          terraform workspace select development || terraform workspace new development
         working-directory: ${{ env.TF_WORKING_DIR }}
 
       - name: Clean K8s Resources from State (Phase 1 migration)
         run: |
           echo "Cleaning Kubernetes resources from state (moved to Phase 2)..."
           terraform state rm 'kubernetes_namespace.staging' 2>/dev/null || echo "  ✓ staging namespace not in state"
+          terraform state rm 'kubernetes_namespace.development' 2>/dev/null || echo "  ✓ development namespace not in state"
           terraform state rm 'kubernetes_namespace.production' 2>/dev/null || echo "  ✓ production namespace not in state"
           terraform state rm 'kubernetes_namespace.signoz[0]' 2>/dev/null || echo "  ✓ signoz namespace not in state"
           terraform state rm 'helm_release.aws_lb_controller[0]' 2>/dev/null || echo "  ✓ aws-lb-controller not in state"
@@ -163,7 +164,7 @@ jobs:
         continue-on-error: true
 
       - name: Terraform Plan
-        run: terraform plan -var="environment=staging" -out=tfplan
+        run: terraform plan -var="environment=development" -out=tfplan
         working-directory: ${{ env.TF_WORKING_DIR }}
 
       - name: Terraform Apply
@@ -179,10 +180,10 @@ jobs:
 
       - name: Summary
         run: |
-          echo "## Staging EKS Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "## Development EKS Deployment Complete" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Environment" >> $GITHUB_STEP_SUMMARY
-          echo "- **Environment:** staging" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment:** development" >> $GITHUB_STEP_SUMMARY
           echo "- **Branch:** develop" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### EKS Cluster" >> $GITHUB_STEP_SUMMARY
@@ -246,6 +247,7 @@ jobs:
         run: |
           echo "Cleaning Kubernetes resources from state (moved to Phase 2)..."
           terraform state rm 'kubernetes_namespace.staging' 2>/dev/null || echo "  ✓ staging namespace not in state"
+          terraform state rm 'kubernetes_namespace.development' 2>/dev/null || echo "  ✓ development namespace not in state"
           terraform state rm 'kubernetes_namespace.production' 2>/dev/null || echo "  ✓ production namespace not in state"
           terraform state rm 'kubernetes_namespace.signoz[0]' 2>/dev/null || echo "  ✓ signoz namespace not in state"
           terraform state rm 'helm_release.aws_lb_controller[0]' 2>/dev/null || echo "  ✓ aws-lb-controller not in state"
@@ -333,7 +335,7 @@ jobs:
           if [[ "${{ github.base_ref }}" == "main" ]]; then
             echo "environment=production" >> $GITHUB_OUTPUT
           else
-            echo "environment=staging" >> $GITHUB_OUTPUT
+            echo "environment=development" >> $GITHUB_OUTPUT
           fi
 
       - name: Terraform Workspace
