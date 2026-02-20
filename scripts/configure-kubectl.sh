@@ -22,7 +22,7 @@ echo -e "${GREEN}========================================${NC}"
 # -----------------------------------------------------------------------------
 
 AWS_REGION="${AWS_REGION:-us-east-1}"
-ENVIRONMENT="${ENVIRONMENT:-staging}"
+ENVIRONMENT="${ENVIRONMENT:-development}"
 CLUSTER_NAME="${CLUSTER_NAME:-fiap-tech-challenge-eks-${ENVIRONMENT}}"
 APP_NAMESPACE="ftc-app-${ENVIRONMENT}"
 

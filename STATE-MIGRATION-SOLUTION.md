@@ -17,7 +17,7 @@ I've added **automatic state cleanup** to the Terraform workflow. Now, before ev
 ```yaml
 - name: Clean K8s Resources from State (Phase 1 migration)
   run: |
-    terraform state rm 'kubernetes_namespace.staging' 2>/dev/null || true
+    terraform state rm 'kubernetes_namespace.development' 2>/dev/null || true
     terraform state rm 'kubernetes_namespace.production' 2>/dev/null || true
     terraform state rm 'kubernetes_namespace.signoz[0]' 2>/dev/null || true
     terraform state rm 'helm_release.aws_lb_controller[0]' 2>/dev/null || true
@@ -39,7 +39,7 @@ The workflow now has the fix built-in:
 ```bash
 # Go to Actions → Terraform Kubernetes Infrastructure → Re-run jobs
 # Or trigger manually:
-gh workflow run terraform.yml --repo fiap-tech-challenge-projects/kubernetes-core-infra --ref develop --field environment=staging --field action=apply
+gh workflow run terraform.yml --repo fiap-tech-challenge-projects/kubernetes-core-infra --ref develop --field environment=development --field action=apply
 ```
 
 ### Option 2: Run State Migration Manually (if workflow still fails)
@@ -48,7 +48,7 @@ I created a dedicated migration workflow:
 
 ```bash
 # Go to Actions → Migrate Terraform State → Run workflow
-# Select environment: staging
+# Select environment: development
 # This will clean the state using OLD code (before refactor)
 ```
 
@@ -64,10 +64,10 @@ ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 terraform init -backend-config="bucket=fiap-tech-challenge-tf-state-${ACCOUNT_ID}"
 
 # Select workspace
-terraform workspace select staging
+terraform workspace select development
 
 # Remove K8s resources
-terraform state rm 'kubernetes_namespace.staging'
+terraform state rm 'kubernetes_namespace.development'
 terraform state rm 'kubernetes_namespace.production'
 terraform state rm 'kubernetes_namespace.signoz[0]'
 terraform state rm 'helm_release.aws_lb_controller[0]'
@@ -75,7 +75,7 @@ terraform state rm 'helm_release.metrics_server'
 terraform state rm 'helm_release.signoz[0]'
 
 # Now plan/apply will work
-terraform plan -var="environment=staging"
+terraform plan -var="environment=development"
 ```
 
 ## What Changed in the Fix
@@ -115,10 +115,10 @@ After the workflow succeeds:
 
 ```bash
 # Check Phase 1 deployed correctly
-aws eks describe-cluster --name fiap-tech-challenge-eks-staging --region us-east-1
+aws eks describe-cluster --name fiap-tech-challenge-eks-development --region us-east-1
 
 # Verify nodes are ready
-aws eks update-kubeconfig --region us-east-1 --name fiap-tech-challenge-eks-staging
+aws eks update-kubeconfig --region us-east-1 --name fiap-tech-challenge-eks-development
 kubectl get nodes
 
 # Check namespaces still exist (created by old state, will be managed by Phase 2)
